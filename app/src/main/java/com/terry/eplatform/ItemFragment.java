@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import com.terry.eplatform.bean.Merchants;
 
@@ -18,10 +20,14 @@ import java.util.ArrayList;
  */
 public class ItemFragment extends Fragment {
 
+    private View mRoot;
+    private ListView mLvAllItems;
+
     private static final String KEY_TITLE = "title";
     private static final String KEY_LIST = "list";
     private String mTitle;
     private ArrayList<Merchants> mMerchants = new ArrayList<>();
+    private ListAdapter mAdapter;
 
     public ItemFragment() {
     }
@@ -42,11 +48,22 @@ public class ItemFragment extends Fragment {
         return fragment;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mAdapter = new ItemAdapter(getActivity(), mMerchants);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mTitle = getArguments().getString(KEY_TITLE);
+        mRoot = inflater.inflate(R.layout.fragment_merchants, container, false);
+        mLvAllItems = (ListView) mRoot.findViewById(R.id.id_lv_merchants);
+        return mRoot;
+    }
 
-        return super.onCreateView(inflater, container, savedInstanceState);
+    public String getTitle() {
+        return mTitle;
     }
 }

@@ -11,6 +11,7 @@ import android.os.Parcelable;
  */
 public class Merchants implements Parcelable {
 
+    private String mer_name; // 商品名称
     private String description; // 描述
     private String imgpath; // 图片路径
     private int market_price; // 市场价
@@ -64,5 +65,65 @@ public class Merchants implements Parcelable {
         parcel.writeString(description);
         parcel.writeString(imgpath);
         parcel.writeString(store_name);
+    }
+
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getImgpath() {
+        return imgpath;
+    }
+
+    public void setImgpath(String imgpath) {
+        this.imgpath = imgpath;
+    }
+
+    public int getMarket_price() {
+        return market_price;
+    }
+
+    public void setMarket_price(int market_price) {
+        this.market_price = market_price;
+    }
+
+    public float getPrice() {
+        return price;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
+    }
+
+    public String getStore_name() {
+        return store_name;
+    }
+
+    public void setStore_name(String store_name) {
+        this.store_name = store_name;
+    }
+
+    public String getMer_name() {
+        return mer_name;
+    }
+
+    public void setMer_name(String mer_name) {
+        this.mer_name = mer_name;
+    }
+
+    @Override
+    public String toString() {
+        return "Merchants{" +
+                "description='" + description + '\'' +
+                ", imgpath='" + imgpath + '\'' +
+                ", market_price=" + market_price +
+                ", price=" + price +
+                ", store_name='" + store_name + '\'' +
+                '}';
     }
 }

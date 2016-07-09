@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/id_tv_mer_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:padding="20dp"
+        android:textSize="20sp" />
+
+
+    <TextView
+        android:id="@+id/id_tv_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/id_tv_mer_name"
+        android:padding="20dp"
+        android:textColor="@color/colorAccent"
+        android:textSize="18sp" />
+
+    <!--市场价需添加删除线-->
+    <TextView
+        android:id="@+id/id_tv_market_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/id_tv_price"
+        android:paddingLeft="20dp"
+        android:textSize="15sp" />
+
+    <ImageView
+        android:id="@+id/id_iv_item_img"
+        android:layout_width="200dp"
+        android:layout_height="150dp"
+        android:layout_alignParentRight="true" />
+</RelativeLayout>

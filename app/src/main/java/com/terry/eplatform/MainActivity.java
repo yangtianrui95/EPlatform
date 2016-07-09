@@ -4,19 +4,23 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-import com.terry.eplatform.bean.Menu;
+import com.terry.eplatform.bean.MenuItem;
+import com.terry.eplatform.bean.Merchants;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import okhttp3.HttpUrl;
@@ -26,20 +30,29 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    // UI
     private TabLayout mTabs;
     private ViewPager mVpContents;
     private ProgressBar mPbLoading;
-    private String[] mLabels;
-    private Fragment[] mFragments;
 
+    // Task
     private LoadMenuTask mTask = new LoadMenuTask();
     private OkHttpClient client = new OkHttpClient();
     private Gson gson = new Gson();
+    private List<MenuItem> mMenus;
+    private List<ArrayList<Merchants>> mAllSubItems = new ArrayList<>();
+
+    // Adapter
+    private String[] mLabels;
+    private Fragment[] mFragments;
 
     // 整体URL
-    private static final String URL = "http://122.200.77.206:8899";
+    public static final String URL = "http://122.200.77.206:8899";
     // 查询参数
-    private static final String QUERY = "/ishop/ePlatform/mobile/queryAllMerchants.do";
+    public static final String QUERY = "/ishop/ePlatform/mobile/queryAllMerchants.do";
+
+    public MainActivity() {
+    }
 
 
     @Override
@@ -71,19 +84,28 @@ public class MainActivity extends AppCompatActivity {
             // 建立连接,获取响应
             try {
                 Response response = client.newCall(request).execute();
-                JSONObject jsonObject = new JSONObject(response.body().string());
-//                Log.v("LOG", response.body().toString());
-                JSONArray jsonArray = jsonObject.optJSONArray("data");
-                // 获取所有的菜单栏
-                List<Menu> menuList = gson.fromJson(jsonArray.toString()
-                        , new TypeToken<List<Menu>>() {
-                        }.getType());
-                Log.v("LOG", menuList.size() + "");
-
+                // 设置编码为UTF-8
+                JsonObject jsonObject = new JsonParser()
+                        .parse(new String(response.body().bytes(), "utf-8")).getAsJsonObject();
+                JsonArray jsonArray = jsonObject.getAsJsonArray("data");
+                mMenus = gson.fromJson(jsonArray.toString(), new TypeToken<List<MenuItem>>() {
+                }.getType());
+                // 获取所有子JSON对象
+                for (JsonElement ele : jsonArray) {
+                    JsonObject object = ele.getAsJsonObject();
+                    JsonArray arr = object.getAsJsonArray("subdata");
+                    Iterator it = arr.iterator();
+                    ArrayList<Merchants> merchantses = new ArrayList<>();
+                    while (it.hasNext()) {
+                        // 获取子列表
+                        Merchants m = gson.fromJson(it.next().toString(), Merchants.class);
+                        merchantses.add(m);
+                    }
+                    mAllSubItems.add(merchantses);
+                }
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
-//                Log.v("LOG", "false !!!");
 
                 return false;
             }
@@ -92,10 +114,36 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             if (aBoolean) {
+                // 取消进度条，显示UI
                 mPbLoading.setVisibility(View.GONE);
-                return;
+                mLabels = new String[mMenus.size()];
+                for (int i = 0; i < mLabels.length; i++) {
+                    mLabels[i] = mMenus.get(i).getSub();
+                }
+                // 初始化Fragment
+                mFragments = new Fragment[mMenus.size()];
+                for (int i = 0; i < mFragments.length; i++) {
+                    mFragments[i] = ItemFragment.newInstance(mMenus.get(i).getSub(), mAllSubItems.get(i));
+                }
+                // 设置Adapter
+                mVpContents.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
+                    @Override
+                    public Fragment getItem(int position) {
+                        return mFragments[position];
+                    }
+
+                    @Override
+                    public int getCount() {
+                        return mFragments.length;
+                    }
+
+                    @Override
+                    public CharSequence getPageTitle(int position) {
+                        return mMenus.get(position).getSub();
+                    }
+                });
+                mTabs.setupWithViewPager(mVpContents);
             }
-            super.onPostExecute(aBoolean);
         }
     }
 }

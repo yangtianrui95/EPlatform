@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        // TODO 获取所有菜单项
         mTask.execute();
     }
 

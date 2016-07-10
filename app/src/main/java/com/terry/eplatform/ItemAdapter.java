@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.terry.eplatform.bean.Merchants;
 
 import java.util.List;
@@ -65,7 +66,9 @@ public class ItemAdapter extends BaseAdapter {
         holder.mTvMerName.setText(mMerchantses.get(position).getMer_name());
         holder.mTvPrice.setText("现价: " + mMerchantses.get(position).getPrice() + "元");
         holder.mTvMarketPrice.setText("市场价: " + mMerchantses.get(position).getMarket_price() + "元");
-        holder.mIvImg.setImageResource(R.mipmap.ic_launcher);
+        // 使用Glide框架异步加载图片
+        Glide.with(mContext).load(MainActivity.URL + "/" + mMerchantses.get(position).getImgpath())
+                .fitCenter().into(holder.mIvImg);
         return convertView;
     }
 
